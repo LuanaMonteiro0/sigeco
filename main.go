@@ -29,7 +29,7 @@ var activeEntries = make(map[string]int)
 
 func main() {
 	myApp := app.New()
-	myWindow := myApp.NewWindow("Controle de Acesso Simples")
+	myWindow := myApp.NewWindow("SIGECO")
 	myWindow.Resize(fyne.NewSize(700, 500))
 
 	idEntry := widget.NewEntry()
@@ -125,7 +125,7 @@ func main() {
 	)
 
 	rightSide := container.NewBorder(
-		widget.NewLabelWithStyle("Pessoas Atualmente Dentro:", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("Log de Eventos:", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		nil, nil, nil,
 		currentlyInsideList,
 	)
