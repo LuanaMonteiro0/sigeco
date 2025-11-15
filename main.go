@@ -151,13 +151,13 @@ func updateInsideListUI(list binding.StringList) {
 				entry.TimestampIn.Format("15:04:05"),
 			)
 		} else {
-			itemString = fmt.Sprintf("%s (%s) - SAIU: %s",
+			itemString = fmt.Sprintf("%s (%s) - Entrou: %s | Saiu: %s",
 				personName,
 				entry.PersonID,
+				entry.TimestampIn.Format("15:04:05"),  
 				entry.TimestampOut.Format("15:04:05"),
 			)
 		}
-		
 		items = append(items, itemString)
 	}
 	
