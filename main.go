@@ -136,20 +136,31 @@ func main() {
 	myWindow.SetContent(split)
 	myWindow.ShowAndRun()
 }
-
 func updateInsideListUI(list binding.StringList) {
 	var items []string
-	for id, entryIndex := range activeEntries {
-		personName := peopleDB[id].Name
-		timestamp := registryLog[entryIndex].TimestampIn
+	
+	for _, entry := range registryLog {
+		personName := peopleDB[entry.PersonID].Name
+		
+		var itemString string
 
-		itemString := fmt.Sprintf("%s (%s) - Entrou: %s",
-			personName,
-			id,
-			timestamp.Format("00:00:00"),
-		)
+		if entry.TimestampOut.IsZero() {
+			itemString = fmt.Sprintf("%s (%s) - Entrou: %s",
+				personName,
+				entry.PersonID,
+				entry.TimestampIn.Format("15:04:05"),
+			)
+		} else {
+			itemString = fmt.Sprintf("%s (%s) - SAIU: %s",
+				personName,
+				entry.PersonID,
+				entry.TimestampOut.Format("15:04:05"),
+			)
+		}
+		
 		items = append(items, itemString)
 	}
+	
 	list.Set(items)
 }
 
