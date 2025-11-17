@@ -136,31 +136,36 @@ func main() {
 	myWindow.SetContent(split)
 	myWindow.ShowAndRun()
 }
+
 func updateInsideListUI(list binding.StringList) {
 	var items []string
-	
+
 	for _, entry := range registryLog {
 		personName := peopleDB[entry.PersonID].Name
-		
+
 		var itemString string
 
+		const layout = "02/01/2006 15:04:05"
+
 		if entry.TimestampOut.IsZero() {
+			// Se NÃO saiu, mostre a entrada
 			itemString = fmt.Sprintf("%s (%s) - Entrou: %s",
 				personName,
 				entry.PersonID,
-				entry.TimestampIn.Format("15:04:05"),
+				entry.TimestampIn.Format(layout),
 			)
 		} else {
+			// Se JÁ saiu, mostre AMBOS os horários
 			itemString = fmt.Sprintf("%s (%s) - Entrou: %s | Saiu: %s",
 				personName,
 				entry.PersonID,
-				entry.TimestampIn.Format("15:04:05"),  
-				entry.TimestampOut.Format("15:04:05"),
+				entry.TimestampIn.Format(layout),
+				entry.TimestampOut.Format(layout),
 			)
 		}
 		items = append(items, itemString)
 	}
-	
+
 	list.Set(items)
 }
 
