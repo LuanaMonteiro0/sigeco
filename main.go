@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -27,6 +29,13 @@ var peopleDB = make(map[string]Person)
 var registryLog = make([]RegistryEntry, 0)
 var activeEntries = make(map[string]int)
 
+type AppData struct {
+	People   map[string]Person `json:"people"`
+	Registry []RegistryEntry   `json:"registry"`
+}
+
+const dataFile = "sigeco_data.json"
+
 const (
 	FilterCompleto   = iota
 	FilterDentro     = iota
@@ -40,6 +49,9 @@ var currentFilterMode = FilterCompleto
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("SIGECO")
+
+	loadData()
+
 	myWindow.Resize(fyne.NewSize(700, 500))
 
 	idEntry := widget.NewEntry()
@@ -93,6 +105,8 @@ func main() {
 
 		statusLabel.SetText(fmt.Sprintf("Entrada registrada: %s (%s)", name, id))
 		clearFields(idEntry, nameEntry, phoneEntry)
+
+		saveData()
 	})
 
 	exitButton := widget.NewButton("Registrar Saída", func() {
@@ -118,6 +132,8 @@ func main() {
 		personName := peopleDB[id].Name
 		statusLabel.SetText(fmt.Sprintf("Saída registrada: %s (%s)", personName, id))
 		clearFields(idEntry, nameEntry, phoneEntry)
+
+		saveData()
 	})
 
 	form := widget.NewForm(
@@ -263,5 +279,51 @@ func updateInsideListUI(list binding.StringList) {
 func clearFields(entries ...*widget.Entry) {
 	for _, entry := range entries {
 		entry.SetText("")
+	}
+}
+
+func saveData() {
+	data := AppData{
+		People:   peopleDB,
+		Registry: registryLog,
+	}
+
+	jsonData, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		fmt.Println("Erro ao converter dados para JSON:", err)
+		return
+	}
+
+	err = os.WriteFile(dataFile, jsonData, 0644)
+	if err != nil {
+		fmt.Println("Erro ao salvar arquivo JSON:", err)
+	}
+}
+
+func loadData() {
+	jsonData, err := os.ReadFile(dataFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("Arquivo de dados não encontrado. Iniciando com estado vazio.")
+			return
+		}
+		fmt.Println("Erro ao ler arquivo JSON:", err)
+		return
+	}
+
+	var data AppData
+	err = json.Unmarshal(jsonData, &data)
+	if err != nil {
+		fmt.Println("Erro ao converter JSON para dados:", err)
+		return
+	}
+
+	peopleDB = data.People
+	registryLog = data.Registry
+
+	for i, entry := range registryLog {
+		if entry.TimestampOut.IsZero() {
+			activeEntries[entry.PersonID] = i
+		}
 	}
 }
