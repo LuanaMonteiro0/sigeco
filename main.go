@@ -12,7 +12,7 @@ import (
 )
 
 type Person struct {
-	ID    string // RG ou CPF
+	ID    string
 	Name  string
 	Phone string
 }
@@ -26,6 +26,16 @@ type RegistryEntry struct {
 var peopleDB = make(map[string]Person)
 var registryLog = make([]RegistryEntry, 0)
 var activeEntries = make(map[string]int)
+
+const (
+	FilterCompleto   = iota
+	FilterDentro     = iota
+	FilterTodos      = iota
+	FilterUltimaHora = iota
+	FilterDia        = iota
+)
+
+var currentFilterMode = FilterCompleto
 
 func main() {
 	myApp := app.New()
@@ -124,8 +134,41 @@ func main() {
 		statusLabel,
 	)
 
+	filterDentroBtn := widget.NewButton("Quem está Dentro", func() {
+		currentFilterMode = FilterDentro
+		updateInsideListUI(currentlyInsideData)
+	})
+	filterTodosBtn := widget.NewButton("Visitantes", func() {
+		currentFilterMode = FilterTodos
+		updateInsideListUI(currentlyInsideData)
+	})
+	filterHoraBtn := widget.NewButton("Última Hora", func() {
+		currentFilterMode = FilterUltimaHora
+		updateInsideListUI(currentlyInsideData)
+	})
+	filterDiaBtn := widget.NewButton("Hoje", func() {
+		currentFilterMode = FilterDia
+		updateInsideListUI(currentlyInsideData)
+	})
+	filterCompletoBtn := widget.NewButton("Relatório Completo", func() {
+		currentFilterMode = FilterCompleto
+		updateInsideListUI(currentlyInsideData)
+	})
+
+	filterButtons := container.NewGridWithColumns(3,
+		filterDentroBtn,
+		filterHoraBtn,
+		filterDiaBtn,
+		filterTodosBtn,
+		filterCompletoBtn,
+	)
+
+	logTitle := widget.NewLabelWithStyle("Log de Eventos:", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
+
+	topContent := container.NewVBox(logTitle, filterButtons)
+
 	rightSide := container.NewBorder(
-		widget.NewLabelWithStyle("Log de Eventos:", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		topContent,
 		nil, nil, nil,
 		currentlyInsideList,
 	)
@@ -137,33 +180,81 @@ func main() {
 	myWindow.ShowAndRun()
 }
 
+func formatLogEntry(entry RegistryEntry, layout string) string {
+	personName := peopleDB[entry.PersonID].Name
+
+	if entry.TimestampOut.IsZero() {
+		return fmt.Sprintf("%s (%s) - Entrou: %s",
+			personName,
+			entry.PersonID,
+			entry.TimestampIn.Format(layout),
+		)
+	} else {
+		return fmt.Sprintf("%s (%s) - Entrou: %s | Saiu: %s",
+			personName,
+			entry.PersonID,
+			entry.TimestampIn.Format(layout),
+			entry.TimestampOut.Format(layout),
+		)
+	}
+}
+
 func updateInsideListUI(list binding.StringList) {
 	var items []string
+	const layout = "02/01/2006 15:04:05"
+	now := time.Now()
 
-	for _, entry := range registryLog {
-		personName := peopleDB[entry.PersonID].Name
+	switch currentFilterMode {
 
-		var itemString string
-
-		const layout = "02/01/2006 15:04:05"
-
-		if entry.TimestampOut.IsZero() {
-			// Se NÃO saiu, mostre a entrada
-			itemString = fmt.Sprintf("%s (%s) - Entrou: %s",
+	case FilterDentro:
+		for id, entryIndex := range activeEntries {
+			personName := peopleDB[id].Name
+			timestamp := registryLog[entryIndex].TimestampIn
+			itemString := fmt.Sprintf("%s (%s) - Entrou: %s",
 				personName,
-				entry.PersonID,
-				entry.TimestampIn.Format(layout),
+				id,
+				timestamp.Format(layout),
 			)
-		} else {
-			// Se JÁ saiu, mostre AMBOS os horários
-			itemString = fmt.Sprintf("%s (%s) - Entrou: %s | Saiu: %s",
-				personName,
-				entry.PersonID,
-				entry.TimestampIn.Format(layout),
-				entry.TimestampOut.Format(layout),
-			)
+			items = append(items, itemString)
 		}
-		items = append(items, itemString)
+
+	case FilterTodos:
+		for id, person := range peopleDB {
+			itemString := fmt.Sprintf("%s (%s) - Telefone: %s",
+				person.Name,
+				id,
+				person.Phone,
+			)
+			items = append(items, itemString)
+		}
+
+	case FilterUltimaHora:
+		umaHoraAtras := now.Add(-1 * time.Hour)
+		for _, entry := range registryLog {
+			if entry.TimestampIn.After(umaHoraAtras) ||
+				(!entry.TimestampOut.IsZero() && entry.TimestampOut.After(umaHoraAtras)) {
+
+				items = append(items, formatLogEntry(entry, layout))
+			}
+		}
+
+	case FilterDia:
+		ano, mes, dia := now.Date()
+		inicioDoDia := time.Date(ano, mes, dia, 0, 0, 0, 0, now.Location())
+		for _, entry := range registryLog {
+			if entry.TimestampIn.After(inicioDoDia) ||
+				(!entry.TimestampOut.IsZero() && entry.TimestampOut.After(inicioDoDia)) {
+
+				items = append(items, formatLogEntry(entry, layout))
+			}
+		}
+
+	case FilterCompleto:
+		fallthrough
+	default:
+		for _, entry := range registryLog {
+			items = append(items, formatLogEntry(entry, layout))
+		}
 	}
 
 	list.Set(items)
