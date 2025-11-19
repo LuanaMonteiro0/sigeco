@@ -1,5 +1,10 @@
 {
   "people": {
+    "098": {
+      "ID": "098",
+      "Name": "José Santinho",
+      "Phone": "098"
+    },
     "123": {
       "ID": "123",
       "Name": "Luana Monteiro",
@@ -29,6 +34,11 @@
       "ID": "789",
       "Name": "Mirna Monteiro",
       "Phone": "789"
+    },
+    "890": {
+      "ID": "890",
+      "Name": "Thiago Trojahn",
+      "Phone": "890"
     }
   },
   "registry": [
@@ -40,7 +50,7 @@
     {
       "PersonID": "234",
       "TimestampIn": "2025-11-19T19:11:10.858820373-03:00",
-      "TimestampOut": "0001-01-01T00:00:00Z"
+      "TimestampOut": "2025-11-19T19:15:54.280080116-03:00"
     },
     {
       "PersonID": "345",
@@ -60,6 +70,16 @@
     {
       "PersonID": "789",
       "TimestampIn": "2025-11-19T19:12:42.541779023-03:00",
+      "TimestampOut": "0001-01-01T00:00:00Z"
+    },
+    {
+      "PersonID": "890",
+      "TimestampIn": "2025-11-19T19:16:19.030954811-03:00",
+      "TimestampOut": "0001-01-01T00:00:00Z"
+    },
+    {
+      "PersonID": "098",
+      "TimestampIn": "2025-11-19T19:16:42.563860598-03:00",
       "TimestampOut": "0001-01-01T00:00:00Z"
     }
   ]
