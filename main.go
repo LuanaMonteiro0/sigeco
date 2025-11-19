@@ -42,6 +42,7 @@ const (
 	FilterTodos      = iota
 	FilterUltimaHora = iota
 	FilterDia        = iota
+	FilterSaidas	 = iota
 )
 
 var currentFilterMode = FilterCompleto
@@ -170,6 +171,10 @@ func main() {
 		currentFilterMode = FilterCompleto
 		updateInsideListUI(currentlyInsideData)
 	})
+	filterSaidasBtn := widget.NewButton("Saídas Realizadas", func() {
+		currentFilterMode = FilterSaidas
+		updateInsideListUI(currentlyInsideData)
+	})
 
 	filterButtons := container.NewGridWithColumns(3,
 		filterDentroBtn,
@@ -177,6 +182,7 @@ func main() {
 		filterDiaBtn,
 		filterTodosBtn,
 		filterCompletoBtn,
+		filterSaidasBtn,
 	)
 
 	logTitle := widget.NewLabelWithStyle("Log de Eventos:", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
@@ -261,6 +267,13 @@ func updateInsideListUI(list binding.StringList) {
 			if entry.TimestampIn.After(inicioDoDia) ||
 				(!entry.TimestampOut.IsZero() && entry.TimestampOut.After(inicioDoDia)) {
 
+				items = append(items, formatLogEntry(entry, layout))
+			}
+		}
+
+	case FilterSaidas:
+		for _, entry := range registryLog {
+			if !entry.TimestampOut.IsZero() {
 				items = append(items, formatLogEntry(entry, layout))
 			}
 		}
