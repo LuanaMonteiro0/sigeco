@@ -1,0 +1,66 @@
+{
+  "people": {
+    "123": {
+      "ID": "123",
+      "Name": "Luana Monteiro",
+      "Phone": "123"
+    },
+    "234": {
+      "ID": "234",
+      "Name": "Sergio Luisir",
+      "Phone": "234"
+    },
+    "345": {
+      "ID": "345",
+      "Name": "Luan Marquet",
+      "Phone": "345"
+    },
+    "456": {
+      "ID": "456",
+      "Name": "Isis Monteiro",
+      "Phone": "456"
+    },
+    "678": {
+      "ID": "678",
+      "Name": "Marcos Monteiro",
+      "Phone": "678"
+    },
+    "789": {
+      "ID": "789",
+      "Name": "Mirna Monteiro",
+      "Phone": "789"
+    }
+  },
+  "registry": [
+    {
+      "PersonID": "123",
+      "TimestampIn": "2025-11-19T19:11:00.592469283-03:00",
+      "TimestampOut": "2025-11-19T19:11:41.55878363-03:00"
+    },
+    {
+      "PersonID": "234",
+      "TimestampIn": "2025-11-19T19:11:10.858820373-03:00",
+      "TimestampOut": "0001-01-01T00:00:00Z"
+    },
+    {
+      "PersonID": "345",
+      "TimestampIn": "2025-11-19T19:11:23.259193587-03:00",
+      "TimestampOut": "0001-01-01T00:00:00Z"
+    },
+    {
+      "PersonID": "456",
+      "TimestampIn": "2025-11-19T19:11:34.542299388-03:00",
+      "TimestampOut": "0001-01-01T00:00:00Z"
+    },
+    {
+      "PersonID": "678",
+      "TimestampIn": "2025-11-19T19:12:25.476336566-03:00",
+      "TimestampOut": "2025-11-19T19:12:49.259702872-03:00"
+    },
+    {
+      "PersonID": "789",
+      "TimestampIn": "2025-11-19T19:12:42.541779023-03:00",
+      "TimestampOut": "0001-01-01T00:00:00Z"
+    }
+  ]
+}
